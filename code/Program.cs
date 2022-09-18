@@ -1,9 +1,4 @@
-﻿using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using prntProject;
-using System.Net;
-
-  
+﻿using prntProject;
 
 Console.Write("How many attempts: ");
 int n = 0;
@@ -19,6 +14,18 @@ PrntManager manager = new PrntManager(overrideFiles);
 
 manager.Start(n, name);
 
+Console.WriteLine($"Downloading ended: {manager.succesfull}/{n}");
 
+Console.WriteLine("Save links? (y/n)");
+string answer = Console.ReadLine();
 
-
+if(answer == "y")
+{
+    string path = manager.CheckFile("results\\links", ".txt");
+    foreach (KeyValuePair<string, string> kvp in manager.urlsTested)
+    {
+        File.AppendAllText(path + ".txt", string.Format("name:{0} link:{1} {2}", kvp.Key, kvp.Value, Environment.NewLine));
+    }
+}
+Console.WriteLine("Enter to exit");
+Console.ReadKey();

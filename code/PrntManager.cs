@@ -18,6 +18,8 @@ namespace prntProject
         Random rnd;
         Tables t;
         public readonly bool overrideFiles;
+        public int succesfull { get; private set; }
+        public Dictionary<string, string> urlsTested { get; private set; }
 
         public PrntManager(bool overrideFiles = false)
         {
@@ -26,6 +28,8 @@ namespace prntProject
             rnd = new Random();
             t = new Tables();
             this.overrideFiles = overrideFiles;
+            succesfull = 0;
+            urlsTested = new Dictionary<string, string>();
         }
         public void Start(int n, string name, string? acceptCookeXPath = "//*[@id=\"qc-cmp2-ui\"]/div[2]/div/button[3]", string imageXPath = "//*[@id=\"screenshot-image\"]")
         {
@@ -45,11 +49,11 @@ namespace prntProject
 
             // download image from next page
             for (int i = 0; i < n; i++)
-                DownloadNexPage(name + i.ToString(), imageXPath);
+                DownloadNexPage(name + i.ToString(), imageXPath, i, n);
 
             webDriver.Quit();
         }
-        public void DownloadNexPage(string name, string imageXPath)
+        public void DownloadNexPage(string name, string imageXPath, int i , int n)
         {
             string url = GetRandomUrl();
 
@@ -73,10 +77,14 @@ namespace prntProject
                 {
                     // check if file already exist
                     if (overrideFiles == false)
-                        filePath = CHeckFile(filePath, fileExtension);
+                        filePath = CheckFile(filePath, fileExtension);
+
+                    urlsTested.Add(filePath, url);
 
                     // download file
                     webClient.DownloadFile(imageUrl, filePath + fileExtension);
+                    succesfull++;
+                    Console.WriteLine($"Downloaded: {i}/{n}");
                 }
                 catch (Exception e)
                 {
@@ -85,7 +93,7 @@ namespace prntProject
             }
 
         }
-        private string CHeckFile(string filePath, string fileExtension)
+        public string CheckFile(string filePath, string fileExtension)
         {
             bool correct = false;
             for (int i = 0; correct == false; i++)
@@ -95,9 +103,7 @@ namespace prntProject
                     correct = true;
                     filePath += i > 0 ? $"({i})" : "";
                 }
-
             }
-
             return filePath;
         }
         private WebDriver GetChromeDriver(bool headless = true)
