@@ -19,13 +19,15 @@ Console.WriteLine($"Downloading ended: {manager.succesfull}/{n}");
 Console.WriteLine("Save links? (y/n)");
 string answer = Console.ReadLine();
 
-if(answer == "y")
+string links = "";
+if (answer == "y")
 {
     string path = manager.CheckFile("results\\links", ".txt");
     foreach (KeyValuePair<string, string> kvp in manager.urlsTested)
     {
-        File.AppendAllText(path + ".txt", string.Format("name:{0} link:{1} {2}", kvp.Key, kvp.Value, Environment.NewLine));
+        links += $"name:{kvp.Key} link:{kvp.Value} {Environment.NewLine}";
     }
+    File.AppendAllText(path + ".txt", links);
 }
 Console.WriteLine("Enter to exit");
 Console.ReadKey();

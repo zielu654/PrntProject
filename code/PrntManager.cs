@@ -84,7 +84,7 @@ namespace prntProject
                     // download file
                     webClient.DownloadFile(imageUrl, filePath + fileExtension);
                     succesfull++;
-                    Console.WriteLine($"Downloaded: {i}/{n}");
+                    Console.WriteLine($"Downloaded: {i + 1}/{n}");
                 }
                 catch (Exception e)
                 {
