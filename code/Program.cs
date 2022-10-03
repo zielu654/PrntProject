@@ -7,27 +7,45 @@ Console.Write("File name: ");
 string name = Console.ReadLine();
 
 bool overrideFiles = false;
-if (args.Length > 0)
-    overrideFiles = args[0] == "-o";
+bool checkExcludedImages = false;
+string directoryExcludedPath = null;
+// check optional parameters
+for (int i = 0; i < args.Length; i++)
+{
+    // if "-o" override files (not change name)
+    overrideFiles = args[i] == "-o";
+    // if "-e" check if downloaded file is "empty" (optional add path to excluded images)
+    if (args[i] == "-e")
+    {
+        checkExcludedImages = true;
+        try
+        {
+            if(args[i + 1] != "-o")
+                directoryExcludedPath = args[i + 1];
+        }
+        catch
+        {
+            directoryExcludedPath = "\\wrong";
+        }
+    }
+}
+if (checkExcludedImages == false)
+    directoryExcludedPath = null;
 
-PrntManager manager = new PrntManager(overrideFiles);
+PrntManager manager = new PrntManager(n, name, overrideFiles, directoryExcludedPath);
 
-manager.Start(n, name);
+manager.Start();
 
 Console.WriteLine($"Downloading ended: {manager.succesfull}/{n}");
 
 Console.WriteLine("Save links? (y/n)");
 string answer = Console.ReadLine();
 
-string links = "";
+
 if (answer == "y")
 {
-    string path = manager.CheckFile("results\\links", ".txt");
-    foreach (KeyValuePair<string, string> kvp in manager.urlsTested)
-    {
-        links += $"name:{kvp.Key} link:{kvp.Value} {Environment.NewLine}";
-    }
-    File.AppendAllText(path + ".txt", links);
+    manager.SaveLinks();
 }
+
 Console.WriteLine("Enter to exit");
 Console.ReadKey();
